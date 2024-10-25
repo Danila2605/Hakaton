@@ -9,7 +9,7 @@ body {
     width: 400px;
     margin: 50px auto;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 9px;
     background: white;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -26,6 +26,22 @@ body {
     padding: 8px;
     border-radius: 5px;
     background-color: #e1f5fe;
+}
+
+::-webkit-scrollbar {
+    width: 15px;
+    height: 15px;
+    background-color: #DCDCDC;
+    border-radius: 9em;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #EABB49;
+    border-radius: 9em;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #E5AF43;
 }
 
 .message.user {
