@@ -30,6 +30,22 @@ body {
     overflow-wrap: break-word;
 }
 
+::-webkit-scrollbar {
+    width: 15px;
+    height: 15px;
+    background-color: #DCDCDC;
+    border-radius: 9em;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #EABB49;
+    border-radius: 9em;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #E5AF43;
+}
+
 .message.user {
     background-color: pink;
     position: relative;
