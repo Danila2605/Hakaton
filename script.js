@@ -1,4 +1,12 @@
-document.getElementById('send-button').addEventListener('click', function() {
+document.getElementById('send-button').addEventListener('click', sendMessage);
+document.getElementById('message-input').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Отменяет действие по умолчанию
+        sendMessage();
+    }
+});
+
+function sendMessage() {
     const input = document.getElementById('message-input');
     const messageText = input.value.trim();
 
@@ -12,4 +20,4 @@ document.getElementById('send-button').addEventListener('click', function() {
         input.value = '';
         messagesContainer.scrollTop = messagesContainer.scrollHeight; // Прокрутка вниз
     }
-});
+}

@@ -1,16 +1,35 @@
 body {
+    position: fixed;
+    height: 100%;
+    width: 100%;
     margin: 0;
     padding: 0;
-    background-color: green;
-    font-family: Arial, sans-serif;
+    background-color: #605D59;
+    font-family: "Rubik", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+#label {
+    background-color: #f5ca3d;
+    padding: 15px;
+    border-bottom: 1px solid #f7f7f7;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .chat-container {
-    height: 600px;
-    margin: 50px;
-    background: red;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    height: calc(100% - 54px);
+    width: calc(75% - 108px);
+    margin: auto;
+    margin-top: 54px;
+    background: #dededc;
+    border-radius: 9px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 
 .messages {
@@ -19,84 +38,101 @@ body {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    font-size: 18px;
+    color: #171918;
 }
 
 .message {
     width: max-content;
     max-width: 75%;
-    margin: 10px 0;
-    padding: 10px;
-    border-radius: 10px;
-    background-color: white;
+    margin: 8px 0;
+    padding: 12px;
+    border-radius: 14px;
+    background-color: #f7f7f7;
     overflow-wrap: break-word;
 }
 
 .message.user {
-    background-color: pink;
+    background-color: #f5ca3db0;
     align-self: flex-end;
     text-align: right;
 }
 
 #input-container {
-    padding: 10px;
+    position: relative;
     display: flex;
+    bottom: -20px;
 }
 
 #message-input {
-    width: 100%;
-    height: 35px;
+    height: 42px;
+    width: calc(100% - 72px);
     margin: 0 25px;
     padding: 10px;
+    background-color: #f7f7f7;
     border: 1px solid #ccc;
     border-radius: 15px;
     font-size: 18px;
-    font-weight: bold;
-    color: blueviolet;
+    font-weight: 500;
+    color: #181818;
+}
+
+#message-input:active,
+:focus {
+    outline: 0;
 }
 
 #message-input::-webkit-input-placeholder {
-    font: Arial, sans-serif;
-    color: blueviolet;
+    font-family: "Rubik", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: #c3c3c2;
 }
 
 #message-input::-moz-placeholder {
-    font: Arial, sans-serif;
-    color: blueviolet;
+    font-family: "Rubik", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: #c3c3c2;
 }
 
 #message-input:-moz-placeholder {
-    font: Arial, sans-serif;
-    color: blueviolet;
+    font-family: "Rubik", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: #c3c3c2;
 }
 
 #message-input:-ms-input-placeholder {
-    font: Arial, sans-serif;
-    color: blueviolet;
+    font-family: "Rubik", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: #c3c3c2;
 }
 
 #send-button {
-    width: 80px;
     padding: 10px;
     border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-#send-button:hover {
-    background-color: #0056b3;
+    position: absolute;
+    right: 32px; /* Отступ от правого края */
+    top: 50%;
+    transform: translateY(-50%); /* Центрирование по вертикали */
+    cursor: pointer; /* Изменение курсора при наведении */
 }
 
 .messages::-webkit-scrollbar {
-    width: 15px;
-    height: 15px;
-    background-color: #DCDCDC;
+    width: 10px;
+    height: 10px;
+    background-color: #dcdcdc;
     border-radius: 9em;
 }
 
 .messages::-webkit-scrollbar-thumb {
-    background-color: #EABB49;
+    background-color: #b5b5b4;
     border-radius: 9em;
 }
 

@@ -6,18 +6,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Интеллектуальный помощник</title>
     <link rel="stylesheet" href="main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300&family=Playfair+Display:ital,wght@0,400;1,500;1,600&family=Rubik:ital,wght@0,300..900;1,300..900&display=swap"
+        rel="stylesheet">
 </head>
 
 <body>
-
+    
+    <div id="label">
+        Интеллектуальный помощник
+    </div>
     <div class="chat-container">
         <div class="messages" id="messages">
             <div class="message">Здравствуйте! Опишите свою проблему, пожалуйста.</div>
             <div class="message user">У меня все хорошо, спасибо!</div>
         </div>
         <div id="input-container">
-            <input type="text" id="message-input" placeholder="Введите текст...">
-            <button id="send-button">Отправить</button>
+            <input type="text" id="message-input" placeholder="Введите текст..." autofocus>
+            <img id="send-button" width="30" height="30" src="https://img.icons8.com/ios-glyphs/30/paper-plane.png"
+                alt="paper-plane" />
         </div>
     </div>
 
