@@ -117,7 +117,7 @@ def is_problem(message):
 # Объединяющая функция для предсказания сервиса, решения и инструкции
 def predict_all(problem):
     if not is_problem(problem): 
-        return "This is not a problem. Please provide a valid problem description.", "", ""
+        return "This is not a problem. Please provide a valid problem description.", "Has not been selected yet", "Has not been selected yet"
     
     predicted_service = predict_service(problem)
     predicted_solution = predict_solution(problem)
@@ -127,30 +127,30 @@ def predict_all(problem):
 
 
 #Пример использования объединяющей функции
-problem = "I can't connect to the internet"
-predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
-print(problem)
-print(f"Service: {predicted_service}")
-print(f"Solution: {predicted_solution}")
-print(f"Instruction: {predicted_instruction}")
+# problem = "I can't connect to the internet"
+# predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
+# print(problem)
+# print(f"Service: {predicted_service}")
+# print(f"Solution: {predicted_solution}")
+# print(f"Instruction: {predicted_instruction}")
 
-problem = "I haven't received any emails"
-predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
-print(problem)
-print(f"Service: {predicted_service}")
-print(f"Solution: {predicted_solution}")
-print(f"Instruction: {predicted_instruction}")
+# problem = "I haven't received any emails"
+# predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
+# print(problem)
+# print(f"Service: {predicted_service}")
+# print(f"Solution: {predicted_solution}")
+# print(f"Instruction: {predicted_instruction}")
 
-problem = "The software keeps crashing"
-predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
-print(problem)
-print(f"Service: {predicted_service}")
-print(f"Solution: {predicted_solution}")
-print(f"Instruction: {predicted_instruction}")
+# problem = "The software keeps crashing"
+# predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
+# print(problem)
+# print(f"Service: {predicted_service}")
+# print(f"Solution: {predicted_solution}")
+# print(f"Instruction: {predicted_instruction}")
 
-problem = "How do I use this feature?"
-predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
-print(problem)
-print(f"Service: {predicted_service}")
-print(f"Solution: {predicted_solution}")
-print(f"Instruction: {predicted_instruction}")
+# problem = "How do I use this feature?"
+# predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
+# print(problem)
+# print(f"Service: {predicted_service}")
+# print(f"Solution: {predicted_solution}")
+# print(f"Instruction: {predicted_instruction}")
