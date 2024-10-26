@@ -1,0 +1,141 @@
+body {
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #605D59;
+    font-family: "Rubik", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+#label {
+    background-color: #f5ca3d;
+    padding: 15px;
+    border-bottom: 1px solid #f7f7f7;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.chat-container {
+    height: calc(100% - 54px);
+    width: calc(75% - 108px);
+    margin: auto;
+    margin-top: 54px;
+    background: #dededc;
+    border-radius: 9px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.messages {
+    height: 75%;
+    padding: 25px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    font-size: 18px;
+    color: #171918;
+}
+
+.message {
+    width: max-content;
+    max-width: 75%;
+    margin: 8px 0;
+    padding: 12px;
+    border-radius: 14px;
+    background-color: #f7f7f7;
+    overflow-wrap: break-word;
+}
+
+.message.user {
+    background-color: #f5ca3db0;
+    align-self: flex-end;
+    text-align: right;
+}
+
+#input-container {
+    position: relative;
+    display: flex;
+    bottom: -20px;
+}
+
+#message-input {
+    height: 42px;
+    width: calc(100% - 72px);
+    margin: 0 25px;
+    padding: 10px;
+    background-color: #f7f7f7;
+    border: 1px solid #ccc;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 500;
+    color: #181818;
+}
+
+#message-input:active,
+:focus {
+    outline: 0;
+}
+
+#message-input::-webkit-input-placeholder {
+    font-family: "Rubik", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: #c3c3c2;
+}
+
+#message-input::-moz-placeholder {
+    font-family: "Rubik", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: #c3c3c2;
+}
+
+#message-input:-moz-placeholder {
+    font-family: "Rubik", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: #c3c3c2;
+}
+
+#message-input:-ms-input-placeholder {
+    font-family: "Rubik", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: #c3c3c2;
+}
+
+#send-button {
+    padding: 10px;
+    border: none;
+    position: absolute;
+    right: 32px; /* Отступ от правого края */
+    top: 50%;
+    transform: translateY(-50%); /* Центрирование по вертикали */
+    cursor: pointer; /* Изменение курсора при наведении */
+}
+
+.messages::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+    background-color: #dcdcdc;
+    border-radius: 9em;
+}
+
+.messages::-webkit-scrollbar-thumb {
+    background-color: #b5b5b4;
+    border-radius: 9em;
+}
+
+.messages::-webkit-scrollbar-thumb:hover {
+    background-color: #E5AF43;
+}
