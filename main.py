@@ -160,7 +160,7 @@ print(f"Test Accuracy Solution: {round((correct_solution / X_test_solution.shape
 
 # Пример использования модели для предсказания
 def predict(text):
-    X_new = vectorizer.transform([text]).toarray()
+    X_new = vectorizer.transform([str(text)]).toarray()
     X_new = np.reshape(X_new, (-1, 1))
 
     # Прямое распространение для сервиса
