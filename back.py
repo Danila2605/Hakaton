@@ -1,12 +1,18 @@
 from flask import Flask, request, render_template, jsonify
 from main import predict
 
+print(predict("I can't connect to the internet"))
+print(predict("The software keeps crashing"))
+print(predict("How do I use this feature?"))
+print(predict("I haven't received any emails"))
+
 app = Flask(__name__)
 
-@app.route('/api/data', methods=['GET'])
-def get_data():
-    question = request.args.get('question')
-    return jsonify({'answer': predict(question)})
+@app.route('/api/data/<question>', methods=['GET'])
+def get_data(question):
+    print(question)
+    qq = predict(question)
+    return jsonify({'answer': qq})
 
 @app.route('/')
 def main():

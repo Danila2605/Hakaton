@@ -6,9 +6,11 @@ document.getElementById('message-input').addEventListener('keypress', function(e
     }
 });
 
+var messageText = '';
+
 function sendMessage() {
     const input = document.getElementById('message-input');
-    const messageText = input.value.trim();
+    messageText = input.value.trim();
 
     if (messageText) {
         const messagesContainer = document.getElementById('messages');
@@ -16,8 +18,8 @@ function sendMessage() {
         newMessage.className = 'message user';
         newMessage.textContent = messageText;
 
-        const url='http://localhost:5000/api/data?question = ' + messageText;
-        $.getJSON(url, function (data, status) {
+        const url=`http://localhost:5000/api/data/${messageText}`;
+        $.get(url, function (data, status) {
             console.log(data.answer[1]);
         });
 
@@ -27,7 +29,9 @@ function sendMessage() {
     }
 }
 
-fetch('http://localhost:5000/api/data?question = ""')
+fetch(`http://localhost:5000/api/data/${question}`, {
+    cache: "no-cache"
+})
     .then(response => response.json())
     .then(data => console.log(data))
     .catch(error => console.error('Error:', error));
