@@ -41,7 +41,7 @@ body {
 }
 
 .chat-container {
-    height: calc(100% - 54px);
+    height: calc(94% - 54px);
     width: calc(75% - 108px);
     margin: auto;
     margin-top: 54px;
@@ -51,15 +51,15 @@ body {
 }
 
 .messages {
-    height: 75%;
+    height: calc(100% - 128px);
     padding: 25px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
     font-size: 18px;
     color: #171918;
-    scrollbar-width: 10px;
-    scrollbar-color: #b5b5b4 #E5AF43;
+    /* scrollbar-width: 10px;
+    scrollbar-color: #b5b5b4 #E5AF43; */
 }
 
 .message {
@@ -154,8 +154,4 @@ body {
 .messages::-webkit-scrollbar-thumb {
     background-color: #b5b5b4;
     border-radius: 9em;
-}
-
-.messages::-webkit-scrollbar-thumb:hover {
-    background-color: #E5AF43;
 }
