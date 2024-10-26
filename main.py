@@ -5,6 +5,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 import numpy as np
+from sklearn.decomposition import TruncatedSVD
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import Normalizer
 
 # Путь к папке с инструкциями
 instruction_folder = r'C:\Python\Dataset\Instructions'
@@ -21,7 +24,7 @@ for filename in os.listdir(instruction_folder):
 df = pd.read_csv(r'C:\Python\Dataset\dataset.csv', encoding='latin1', on_bad_lines='skip', sep=';')
 
 # Предобработка данных
-vectorizer = TfidfVectorizer()
+vectorizer = TfidfVectorizer(stop_words='english', max_features=10000)
 X_problems = vectorizer.fit_transform(df['Topic']).toarray()
 X_instructions = vectorizer.transform(list(instruction_dict.values())).toarray()
 
@@ -41,7 +44,7 @@ else:
     raise KeyError("Столбцы 'Topic', 'label', 'Solution' и/или 'Instruction' не найдены в DataFrame")
 
 # Предобработка данных
-vectorizer = TfidfVectorizer()
+vectorizer = TfidfVectorizer(stop_words='english', max_features=10000)
 X = vectorizer.fit_transform(X).toarray()
 
 label_encoder_label = LabelEncoder()
@@ -95,9 +98,6 @@ def sigmoid(x):
 def sigmoid_derivative(x):
     return x * (1 - x)
 
-
-
-
 # Параметры нейронной сети для сервисов
 input_size = X_train.shape[1]
 hidden_size = 50
@@ -108,12 +108,9 @@ weights_hidden_to_output = np.random.uniform(-0.5, 0.5, (output_size, hidden_siz
 bias_input_to_hidden = np.zeros((hidden_size, 1))
 bias_hidden_to_output = np.zeros((output_size, 1))
 
-
-
-
 # Параметры нейронной сети для решений
 input_size_solution = X_train_solution.shape[1]
-hidden_size_solution = 10
+hidden_size_solution = 50
 output_size_solution = len(label_encoder_solution.classes_)
 
 weights_input_to_hidden_solution = np.random.uniform(-0.5, 0.5, (hidden_size_solution, input_size_solution))
@@ -121,12 +118,9 @@ weights_hidden_to_output_solution = np.random.uniform(-0.5, 0.5, (output_size_so
 bias_input_to_hidden_solution = np.zeros((hidden_size_solution, 1))
 bias_hidden_to_output_solution = np.zeros((output_size_solution, 1))
 
-
-
-
 # Параметры нейронной сети для инструкций
 input_size_instruction = X_train_instruction.shape[1]
-hidden_size_instruction = 10
+hidden_size_instruction = 50
 output_size_instruction = len(label_encoder_instruction.classes_)
 
 weights_input_to_hidden_instruction = np.random.uniform(-0.5, 0.5, (hidden_size_instruction, input_size_instruction))
@@ -134,183 +128,149 @@ weights_hidden_to_output_instruction = np.random.uniform(-0.5, 0.5, (output_size
 bias_input_to_hidden_instruction = np.zeros((hidden_size_instruction, 1))
 bias_hidden_to_output_instruction = np.zeros((output_size_instruction, 1))
 
-
-
-
 # Изменение гиперпараметров
-epochs_labels = 100  # Увеличиваем количество эпох
+epochs_labels = 200  # Увеличиваем количество эпох
 epochs_solution = 500
-epochs_instruction = 100
+epochs_instruction = 200
 learning_rate = 0.01  # Уменьшаем скорость обучения
 
+# Обучение определения сервиса у проблемы
+for epoch in range(epochs_labels):
+    e_loss = 0
+    e_correct = 0
 
+    for i in range(X_train.shape[0]):
+        image = np.reshape(X_train[i], (-1, 1))
+        label = np.zeros((output_size, 1))
+        label[y_train[i]] = 1
 
+        # Прямое распространение (к скрытому слою)
+        hidden_raw = bias_input_to_hidden + weights_input_to_hidden @ image
+        hidden = sigmoid(hidden_raw)
 
+        # Прямое распространение (к выходному слою)
+        output_raw = bias_hidden_to_output + weights_hidden_to_output @ hidden
+        output = sigmoid(output_raw)
 
-# # Обучение определения сервиса у проблемы
-# for epoch in range(epochs_labels):
-#     e_loss = 0
-#     e_correct = 0
+        # Вычисление ошибки
+        e_loss += 1 / len(output) * np.sum((output - label) ** 2, axis=0)
+        e_correct += int(np.argmax(output) == np.argmax(label))
 
-#     for i in range(X_train.shape[0]):
-#         image = np.reshape(X_train[i], (-1, 1))
-#         label = np.zeros((output_size, 1))
-#         label[y_train[i]] = 1
+        # Обратное распространение (выходной слой)
+        delta_output = output - label
+        weights_hidden_to_output += -learning_rate * delta_output @ np.transpose(hidden)
+        bias_hidden_to_output += -learning_rate * delta_output
 
-#         # Прямое распространение (к скрытому слою)
-#         hidden_raw = bias_input_to_hidden + weights_input_to_hidden @ image
-#         hidden = sigmoid(hidden_raw)
+        # Обратное распространение (скрытый слой)
+        delta_hidden = np.transpose(weights_hidden_to_output) @ delta_output * sigmoid_derivative(hidden)
+        weights_input_to_hidden += -learning_rate * delta_hidden @ np.transpose(image)
+        bias_input_to_hidden += -learning_rate * delta_hidden
 
-#         # Прямое распространение (к выходному слою)
-#         output_raw = bias_hidden_to_output + weights_hidden_to_output @ hidden
-#         output = sigmoid(output_raw)
+    # Вывод отладочной информации между эпохами
+    print(f"Epoch №{epoch}")
+    print(f"Loss: {round((e_loss[0] / X_train.shape[0]) * 100, 3)}%")
+    print(f"Accuracy: {round((e_correct / X_train.shape[0]) * 100, 3)}%")
+    e_loss = 0
+    e_correct = 0
 
-#         # Вычисление ошибки
-#         e_loss += 1 / len(output) * np.sum((output - label) ** 2, axis=0)
-#         e_correct += int(np.argmax(output) == np.argmax(label))
+# Сохранение модели для сервисов
+np.savez('service_model.npz',
+         weights_input_to_hidden=weights_input_to_hidden,
+         weights_hidden_to_output=weights_hidden_to_output,
+         bias_input_to_hidden=bias_input_to_hidden,
+         bias_hidden_to_output=bias_hidden_to_output)
 
-#         # Обратное распространение (выходной слой)
-#         delta_output = output - label
-#         weights_hidden_to_output += -learning_rate * delta_output @ np.transpose(hidden)
-#         bias_hidden_to_output += -learning_rate * delta_output
+# Обучение нейронной сети для решений
+for epoch in range(epochs_solution):
+    e_loss_solution = 0
+    e_correct_solution = 0
 
-#         # Обратное распространение (скрытый слой)
-#         delta_hidden = np.transpose(weights_hidden_to_output) @ delta_output * sigmoid_derivative(hidden)
-#         weights_input_to_hidden += -learning_rate * delta_hidden @ np.transpose(image)
-#         bias_input_to_hidden += -learning_rate * delta_hidden
+    for i in range(X_train_solution.shape[0]):
+        image = np.reshape(X_train_solution[i], (-1, 1))
+        label_solution = np.zeros((output_size_solution, 1))
+        label_solution[y_train_solution[i]] = 1
 
-#     # Вывод отладочной информации между эпохами
-#     print(f"Epoch №{epoch}")
-#     print(f"Loss: {round((e_loss[0] / X_train.shape[0]) * 100, 3)}%")
-#     print(f"Accuracy: {round((e_correct / X_train.shape[0]) * 100, 3)}%")
-#     e_loss = 0
-#     e_correct = 0
+        # Прямое распространение (к скрытому слою)
+        hidden_raw_solution = bias_input_to_hidden_solution + weights_input_to_hidden_solution @ image
+        hidden_solution = sigmoid(hidden_raw_solution)
 
-# # Сохранение модели для сервисов
-# np.savez('service_model.npz',
-#          weights_input_to_hidden=weights_input_to_hidden,
-#          weights_hidden_to_output=weights_hidden_to_output,
-#          bias_input_to_hidden=bias_input_to_hidden,
-#          bias_hidden_to_output=bias_hidden_to_output)
+        # Прямое распространение (к выходному слою для решения)
+        output_raw_solution = bias_hidden_to_output_solution + weights_hidden_to_output_solution @ hidden_solution
+        output_solution = sigmoid(output_raw_solution)
 
+        # Вычисление ошибки для решения
+        e_loss_solution += 1 / len(output_solution) * np.sum((output_solution - label_solution) ** 2, axis=0)
+        e_correct_solution += int(np.argmax(output_solution) == np.argmax(label_solution))
 
+        # Обратное распространение (выходной слой для решения)
+        delta_output_solution = output_solution - label_solution
+        weights_hidden_to_output_solution += -learning_rate * delta_output_solution @ np.transpose(hidden_solution)
+        bias_hidden_to_output_solution += -learning_rate * delta_output_solution
 
+        # Обратное распространение (скрытый слой для решения)
+        delta_hidden_solution = np.transpose(weights_hidden_to_output_solution) @ delta_output_solution * sigmoid_derivative(hidden_solution)
+        weights_input_to_hidden_solution += -learning_rate * delta_hidden_solution @ np.transpose(image)
+        bias_input_to_hidden_solution += -learning_rate * delta_hidden_solution
 
+    # Вывод отладочной информации между эпохами
+    print(f"Epoch №{epoch}")
+    print(f"Loss Solution: {round((e_loss_solution[0] / X_train_solution.shape[0]) * 100, 3)}%")
+    print(f"Accuracy Solution: {round((e_correct_solution / X_train_solution.shape[0]) * 100, 3)}%")
+    e_loss_solution = 0
+    e_correct_solution = 0
 
+# Сохранение модели для решений
+np.savez('solution_model.npz',
+         weights_input_to_hidden_solution=weights_input_to_hidden_solution,
+         weights_hidden_to_output_solution=weights_hidden_to_output_solution,
+         bias_input_to_hidden_solution=bias_input_to_hidden_solution,
+         bias_hidden_to_output_solution=bias_hidden_to_output_solution)
 
-# # Обучение нейронной сети для решений
-# for epoch in range(epochs_solution):
-#     e_loss_solution = 0
-#     e_correct_solution = 0
+# Обучение нейронной сети для инструкций
+for epoch in range(epochs_instruction):
+    e_loss_instruction = 0
+    e_correct_instruction = 0
 
-#     for i in range(X_train_solution.shape[0]):
-#         image = np.reshape(X_train_solution[i], (-1, 1))
-#         label_solution = np.zeros((output_size_solution, 1))
-#         label_solution[y_train_solution[i]] = 1
+    for i in range(X_train_instruction.shape[0]):
+        image = np.reshape(X_train_instruction[i], (-1, 1))
+        label_instruction = np.zeros((output_size_instruction, 1))
+        label_instruction[y_train_instruction[i]] = 1
 
-#         # Прямое распространение (к скрытому слою)
-#         hidden_raw_solution = bias_input_to_hidden_solution + weights_input_to_hidden_solution @ image
-#         hidden_solution = sigmoid(hidden_raw_solution)
+        # Прямое распространение (к скрытому слою)
+        hidden_raw_instruction = bias_input_to_hidden_instruction + weights_input_to_hidden_instruction @ image
+        hidden_instruction = sigmoid(hidden_raw_instruction)
 
-#         # Прямое распространение (к выходному слою для решения)
-#         output_raw_solution = bias_hidden_to_output_solution + weights_hidden_to_output_solution @ hidden_solution
-#         output_solution = sigmoid(output_raw_solution)
+        # Прямое распространение (к выходному слою для инструкций)
+        output_raw_instruction = bias_hidden_to_output_instruction + weights_hidden_to_output_instruction @ hidden_instruction
+        output_instruction = sigmoid(output_raw_instruction)
 
-#         # Вычисление ошибки для решения
-#         e_loss_solution += 1 / len(output_solution) * np.sum((output_solution - label_solution) ** 2, axis=0)
-#         e_correct_solution += int(np.argmax(output_solution) == np.argmax(label_solution))
+        # Вычисление ошибки для инструкций
+        e_loss_instruction += 1 / len(output_instruction) * np.sum((output_instruction - label_instruction) ** 2, axis=0)
+        e_correct_instruction += int(np.argmax(output_instruction) == np.argmax(label_instruction))
 
-#         # Обратное распространение (выходной слой для решения)
-#         delta_output_solution = output_solution - label_solution
-#         weights_hidden_to_output_solution += -learning_rate * delta_output_solution @ np.transpose(hidden_solution)
-#         bias_hidden_to_output_solution += -learning_rate * delta_output_solution
+        # Обратное распространение (выходной слой для инструкций)
+        delta_output_instruction = output_instruction - label_instruction
+        weights_hidden_to_output_instruction += -learning_rate * delta_output_instruction @ np.transpose(hidden_instruction)
+        bias_hidden_to_output_instruction += -learning_rate * delta_output_instruction
 
-#         # Обратное распространение (скрытый слой для решения)
-#         delta_hidden_solution = np.transpose(weights_hidden_to_output_solution) @ delta_output_solution * sigmoid_derivative(hidden_solution)
-#         weights_input_to_hidden_solution += -learning_rate * delta_hidden_solution @ np.transpose(image)
-#         bias_input_to_hidden_solution += -learning_rate * delta_hidden_solution
+        # Обратное распространение (скрытый слой для инструкций)
+        delta_hidden_instruction = np.transpose(weights_hidden_to_output_instruction) @ delta_output_instruction * sigmoid_derivative(hidden_instruction)
+        weights_input_to_hidden_instruction += -learning_rate * delta_hidden_instruction @ np.transpose(image)
+        bias_input_to_hidden_instruction += -learning_rate * delta_hidden_instruction
 
-#     # Вывод отладочной информации между эпохами
-#     print(f"Epoch №{epoch}")
-#     print(f"Loss Solution: {round((e_loss_solution[0] / X_train_solution.shape[0]) * 100, 3)}%")
-#     print(f"Accuracy Solution: {round((e_correct_solution / X_train_solution.shape[0]) * 100, 3)}%")
-#     e_loss_solution = 0
-#     e_correct_solution = 0
+    # Вывод отладочной информации между эпохами
+    print(f"Epoch №{epoch}")
+    print(f"Loss Instruction: {round((e_loss_instruction[0] / X_train_instruction.shape[0]) * 100, 3)}%")
+    print(f"Accuracy Instruction: {round((e_correct_instruction / X_train_instruction.shape[0]) * 100, 3)}%")
+    e_loss_instruction = 0
+    e_correct_instruction = 0
 
-# # Сохранение модели для решений
-# np.savez('solution_model.npz',
-#          weights_input_to_hidden_solution=weights_input_to_hidden_solution,
-#          weights_hidden_to_output_solution=weights_hidden_to_output_solution,
-#          bias_input_to_hidden_solution=bias_input_to_hidden_solution,
-#          bias_hidden_to_output_solution=bias_hidden_to_output_solution)
-
-
-
-
-
-
-
-
-# #Обучение нейронной сети для инструкций
-# for epoch in range(epochs_instruction):
-#     e_loss_instruction = 0
-#     e_correct_instruction = 0
-
-#     for i in range(X_train_instruction.shape[0]):
-#         image = np.reshape(X_train_instruction[i], (-1, 1))
-#         label_instruction = np.zeros((output_size_instruction, 1))
-#         label_instruction[y_train_instruction[i]] = 1
-
-#         # Прямое распространение (к скрытому слою)
-#         hidden_raw_instruction = bias_input_to_hidden_instruction + weights_input_to_hidden_instruction @ image
-#         hidden_instruction = sigmoid(hidden_raw_instruction)
-
-#         # Прямое распространение (к выходному слою для инструкций)
-#         output_raw_instruction = bias_hidden_to_output_instruction + weights_hidden_to_output_instruction @ hidden_instruction
-#         output_instruction = sigmoid(output_raw_instruction)
-
-#         # Вычисление ошибки для инструкций
-#         e_loss_instruction += 1 / len(output_instruction) * np.sum((output_instruction - label_instruction) ** 2, axis=0)
-#         e_correct_instruction += int(np.argmax(output_instruction) == np.argmax(label_instruction))
-
-#         # Обратное распространение (выходной слой для инструкций)
-#         delta_output_instruction = output_instruction - label_instruction
-#         weights_hidden_to_output_instruction += -learning_rate * delta_output_instruction @ np.transpose(hidden_instruction)
-#         bias_hidden_to_output_instruction += -learning_rate * delta_output_instruction
-
-#         # Обратное распространение (скрытый слой для инструкций)
-#         delta_hidden_instruction = np.transpose(weights_hidden_to_output_instruction) @ delta_output_instruction * sigmoid_derivative(hidden_instruction)
-#         weights_input_to_hidden_instruction += -learning_rate * delta_hidden_instruction @ np.transpose(image)
-#         bias_input_to_hidden_instruction += -learning_rate * delta_hidden_instruction
-
-#     # Вывод отладочной информации между эпохами
-#     print(f"Epoch №{epoch}")
-#     print(f"Loss Instruction: {round((e_loss_instruction[0] / X_train_instruction.shape[0]) * 100, 3)}%")
-#     print(f"Accuracy Instruction: {round((e_correct_instruction / X_train_instruction.shape[0]) * 100, 3)}%")
-#     e_loss_instruction = 0
-#     e_correct_instruction = 0
-
-# # Сохранение модели для инструкций
-# np.savez('instruction_model.npz',
-#          weights_input_to_hidden_instruction=weights_input_to_hidden_instruction,
-#          weights_hidden_to_output_instruction=weights_hidden_to_output_instruction,
-#          bias_input_to_hidden_instruction=bias_input_to_hidden_instruction,
-#          bias_hidden_to_output_instruction=bias_hidden_to_output_instruction)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Сохранение модели для инструкций
+np.savez('instruction_model.npz',
+         weights_input_to_hidden_instruction=weights_input_to_hidden_instruction,
+         weights_hidden_to_output_instruction=weights_hidden_to_output_instruction,
+         bias_input_to_hidden_instruction=bias_input_to_hidden_instruction,
+         bias_hidden_to_output_instruction=bias_hidden_to_output_instruction)
 
 # Загрузка модели для инструкций
 loaded_instruction_model = np.load('instruction_model.npz')
@@ -332,22 +292,6 @@ weights_input_to_hidden_service = loaded_service_model['weights_input_to_hidden'
 weights_hidden_to_output_service = loaded_service_model['weights_hidden_to_output']
 bias_input_to_hidden_service = loaded_service_model['bias_input_to_hidden']
 bias_hidden_to_output_service = loaded_service_model['bias_hidden_to_output']
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 # Проверка на тестовых данных для сервисов
 correct_service = 0
@@ -408,16 +352,6 @@ for i in range(X_test_instruction.shape[0]):
         correct_instruction += 1
 
 print(f"Test Accuracy Instruction: {round((correct_instruction / X_test_instruction.shape[0]) * 100, 3)}%")
-
-
-
-
-
-
-
-
-
-
 
 # Функция для предсказания сервиса
 def predict_service(problem):
@@ -484,24 +418,28 @@ def predict_all(problem):
 # Пример использования объединяющей функции
 problem = "I can't connect to the internet"
 predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
+print(problem)
 print(f"Service: {predicted_service}")
 print(f"Solution: {predicted_solution}")
 print(f"Instruction: {predicted_instruction}")
 
 problem = "I haven't received any emails"
 predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
+print(problem)
 print(f"Service: {predicted_service}")
 print(f"Solution: {predicted_solution}")
 print(f"Instruction: {predicted_instruction}")
 
 problem = "The software keeps crashing"
 predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
+print(problem)
 print(f"Service: {predicted_service}")
 print(f"Solution: {predicted_solution}")
 print(f"Instruction: {predicted_instruction}")
 
 problem = "How do I use this feature?"
 predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
+print(problem)
 print(f"Service: {predicted_service}")
 print(f"Solution: {predicted_solution}")
 print(f"Instruction: {predicted_instruction}")
