@@ -19,6 +19,10 @@ function sendMessage() {
         const url='http://localhost:5000/api/data?question = ' + messageText;
         $.getJSON(url, function (data, status) {
             console.log(data.answer[1]);
+            const responseMessage = document.createElement('div');
+            responseMessage.className = 'message'; // Можно добавить класс для стилизации
+            responseMessage.textContent = data.answer[1]; // Получаем ответ
+            messagesContainer.appendChild(responseMessage); // Добавляем ответное сообщение
         });
 
         messagesContainer.appendChild(newMessage);
