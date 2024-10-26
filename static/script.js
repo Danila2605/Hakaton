@@ -20,10 +20,11 @@ function sendMessage() {
 
         const url=`http://localhost:5000/api/data/${messageText}`;
         $.get(url, function (data, status) {
-            console.log(data.answer[1]);
             const responseMessage = document.createElement('div');
             responseMessage.className = 'message'; // Можно добавить класс для стилизации
-            responseMessage.textContent = data.answer[1]; // Получаем ответ
+            responseMessage.innerHTML += 'This problem from \"<b>' + data.predicted_service + "</b>\""
+                + "<hr><b>● Solution</b>: " + data.predicted_solution
+                + "<br><br><b>● Also you can check this</b>: " + data.predicted_instruction; // Получаем ответ
             messagesContainer.appendChild(responseMessage); // Добавляем ответное сообщение
             messagesContainer.scrollTop = messagesContainer.scrollHeight; // Прокрутка вниз
         });
