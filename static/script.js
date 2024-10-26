@@ -16,9 +16,19 @@ function sendMessage() {
         newMessage.className = 'message user';
         newMessage.textContent = messageText;
 
+        const url='http://localhost:5000/api/data?question = ' + messageText;
+        $.getJSON(url, function (data, status) {
+            console.log(data.answer[1]);
+        });
+
         messagesContainer.appendChild(newMessage);
         input.value = '';
         messagesContainer.scrollTop = messagesContainer.scrollHeight; // Прокрутка вниз
 
     }
 }
+
+fetch('http://localhost:5000/api/data?question = ""')
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
