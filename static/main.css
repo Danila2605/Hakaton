@@ -41,18 +41,18 @@ body {
 }
 
 .chat-container {
-    height: calc(94% - 54px);
+    height: calc(100% - 162px);
     width: calc(75% - 108px);
-    margin: auto;
-    margin-top: 54px;
+    margin: 54px auto;
     background: #dededc;
     border-radius: 9px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 
 .messages {
-    height: calc(100% - 128px);
+    height: calc(100% - 108px);
     padding: 25px;
+    padding-bottom: 0px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -81,7 +81,7 @@ body {
 #input-container {
     position: relative;
     display: flex;
-    bottom: -20px;
+    bottom: -5px;
 }
 
 #message-input {
