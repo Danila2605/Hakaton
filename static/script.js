@@ -25,6 +25,7 @@ function sendMessage() {
             responseMessage.className = 'message'; // Можно добавить класс для стилизации
             responseMessage.textContent = data.answer[1]; // Получаем ответ
             messagesContainer.appendChild(responseMessage); // Добавляем ответное сообщение
+            messagesContainer.scrollTop = messagesContainer.scrollHeight; // Прокрутка вниз
         });
 
         messagesContainer.appendChild(newMessage);
