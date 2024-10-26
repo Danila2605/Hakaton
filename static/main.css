@@ -26,7 +26,7 @@ body {
 #label_logo {
     height: 54px;
     width: 54px;
-    background-image: url("images/logo.png");
+    background-image: url("/images/logo.png");
     background-size: cover;
 }
 
