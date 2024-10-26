@@ -31,12 +31,6 @@ similarity_matrix = cosine_similarity(X_problems, X_instructions)
 # Добавление столбца с инструкциями в датасет
 df['Instruction'] = [list(instruction_dict.keys())[similarity_matrix[i].argmax()] for i in range(len(df))]
 
-# Проверка загруженных данных
-print(df.head())
-
-# Проверка имен столбцов
-print(df.columns)
-
 # Использование столбцов 'Topic', 'label', 'Solution' и 'Instruction'
 if 'Topic' in df.columns and 'label' in df.columns and 'Solution' in df.columns and 'Instruction' in df.columns:
     X = df['Topic']
@@ -101,6 +95,9 @@ def sigmoid(x):
 def sigmoid_derivative(x):
     return x * (1 - x)
 
+
+
+
 # Параметры нейронной сети для сервисов
 input_size = X_train.shape[1]
 hidden_size = 50
@@ -110,6 +107,9 @@ weights_input_to_hidden = np.random.uniform(-0.5, 0.5, (hidden_size, input_size)
 weights_hidden_to_output = np.random.uniform(-0.5, 0.5, (output_size, hidden_size))
 bias_input_to_hidden = np.zeros((hidden_size, 1))
 bias_hidden_to_output = np.zeros((output_size, 1))
+
+
+
 
 # Параметры нейронной сети для решений
 input_size_solution = X_train_solution.shape[1]
@@ -121,6 +121,9 @@ weights_hidden_to_output_solution = np.random.uniform(-0.5, 0.5, (output_size_so
 bias_input_to_hidden_solution = np.zeros((hidden_size_solution, 1))
 bias_hidden_to_output_solution = np.zeros((output_size_solution, 1))
 
+
+
+
 # Параметры нейронной сети для инструкций
 input_size_instruction = X_train_instruction.shape[1]
 hidden_size_instruction = 10
@@ -131,13 +134,20 @@ weights_hidden_to_output_instruction = np.random.uniform(-0.5, 0.5, (output_size
 bias_input_to_hidden_instruction = np.zeros((hidden_size_instruction, 1))
 bias_hidden_to_output_instruction = np.zeros((output_size_instruction, 1))
 
+
+
+
 # Изменение гиперпараметров
-epochs_labels = 150  # Увеличиваем количество эпох
+epochs_labels = 100  # Увеличиваем количество эпох
 epochs_solution = 500
-epochs_instruction = 500
+epochs_instruction = 100
 learning_rate = 0.01  # Уменьшаем скорость обучения
 
-# Обучение определения сервиса у проблемы
+
+
+
+
+# # Обучение определения сервиса у проблемы
 # for epoch in range(epochs_labels):
 #     e_loss = 0
 #     e_correct = 0
@@ -182,6 +192,10 @@ learning_rate = 0.01  # Уменьшаем скорость обучения
 #          weights_hidden_to_output=weights_hidden_to_output,
 #          bias_input_to_hidden=bias_input_to_hidden,
 #          bias_hidden_to_output=bias_hidden_to_output)
+
+
+
+
 
 
 # # Обучение нейронной сети для решений
@@ -231,7 +245,13 @@ learning_rate = 0.01  # Уменьшаем скорость обучения
 #          bias_hidden_to_output_solution=bias_hidden_to_output_solution)
 
 
-# Обучение нейронной сети для инструкций
+
+
+
+
+
+
+# #Обучение нейронной сети для инструкций
 # for epoch in range(epochs_instruction):
 #     e_loss_instruction = 0
 #     e_correct_instruction = 0
@@ -277,6 +297,21 @@ learning_rate = 0.01  # Уменьшаем скорость обучения
 #          bias_input_to_hidden_instruction=bias_input_to_hidden_instruction,
 #          bias_hidden_to_output_instruction=bias_hidden_to_output_instruction)
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Загрузка модели для инструкций
 loaded_instruction_model = np.load('instruction_model.npz')
 weights_input_to_hidden_instruction = loaded_instruction_model['weights_input_to_hidden_instruction']
@@ -297,6 +332,21 @@ weights_input_to_hidden_service = loaded_service_model['weights_input_to_hidden'
 weights_hidden_to_output_service = loaded_service_model['weights_hidden_to_output']
 bias_input_to_hidden_service = loaded_service_model['bias_input_to_hidden']
 bias_hidden_to_output_service = loaded_service_model['bias_hidden_to_output']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # Проверка на тестовых данных для сервисов
@@ -359,7 +409,51 @@ for i in range(X_test_instruction.shape[0]):
 
 print(f"Test Accuracy Instruction: {round((correct_instruction / X_test_instruction.shape[0]) * 100, 3)}%")
 
-# Пример использования модели для предсказания
+
+
+
+
+
+
+
+
+
+
+# Функция для предсказания сервиса
+def predict_service(problem):
+    # Transform the problem using the same vectorizer
+    X_new = vectorizer.transform([problem]).toarray()
+
+    # Ensure the input dimensions match the training data dimensions
+    X_new = np.reshape(X_new, (1, -1))  # Reshape to match the input shape expected by the model
+
+    # Прямое распространение для сервиса
+    hidden_raw_service = bias_input_to_hidden_service + weights_input_to_hidden_service @ X_new.T
+    hidden_service = sigmoid(hidden_raw_service)
+    output_raw_service = bias_hidden_to_output_service + weights_hidden_to_output_service @ hidden_service
+    output_service = sigmoid(output_raw_service)
+    predicted_service = label_encoder_label.inverse_transform([np.argmax(output_service)])[0]
+
+    return predicted_service
+
+# Функция для предсказания решения
+def predict_solution(problem):
+    # Transform the problem using the same vectorizer
+    X_new = vectorizer.transform([problem]).toarray()
+
+    # Ensure the input dimensions match the training data dimensions
+    X_new = np.reshape(X_new, (1, -1))  # Reshape to match the input shape expected by the model
+
+    # Прямое распространение для решения
+    hidden_raw_solution = bias_input_to_hidden_solution + weights_input_to_hidden_solution @ X_new.T
+    hidden_solution = sigmoid(hidden_raw_solution)
+    output_raw_solution = bias_hidden_to_output_solution + weights_hidden_to_output_solution @ hidden_solution
+    output_solution = sigmoid(output_raw_solution)
+    predicted_solution = label_encoder_solution.inverse_transform([np.argmax(output_solution)])[0]
+
+    return predicted_solution
+
+# Функция для предсказания инструкции
 def predict_instruction(problem, service, similar_solution):
     # Combine the problem, service, and similar_solution into a single input
     combined_input = f"{problem} {service} {similar_solution}"
@@ -379,8 +473,35 @@ def predict_instruction(problem, service, similar_solution):
 
     return predicted_instruction
 
-# Пример предсказания
-print(predict_instruction("I can't connect to the internet", "Network", "Check your network settings"))
-print(predict_instruction("I haven't received any emails", "Email", "Check your email settings"))
-print(predict_instruction("The software keeps crashing", "Software", "Reinstall the software"))
-print(predict_instruction("How do I use this feature?", "Training", "Read the user manual"))
+# Объединяющая функция для предсказания сервиса, решения и инструкции
+def predict_all(problem):
+    predicted_service = predict_service(problem)
+    predicted_solution = predict_solution(problem)
+    predicted_instruction = predict_instruction(problem, predicted_service, predicted_solution)
+
+    return predicted_service, predicted_solution, predicted_instruction
+
+# Пример использования объединяющей функции
+problem = "I can't connect to the internet"
+predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
+print(f"Service: {predicted_service}")
+print(f"Solution: {predicted_solution}")
+print(f"Instruction: {predicted_instruction}")
+
+problem = "I haven't received any emails"
+predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
+print(f"Service: {predicted_service}")
+print(f"Solution: {predicted_solution}")
+print(f"Instruction: {predicted_instruction}")
+
+problem = "The software keeps crashing"
+predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
+print(f"Service: {predicted_service}")
+print(f"Solution: {predicted_solution}")
+print(f"Instruction: {predicted_instruction}")
+
+problem = "How do I use this feature?"
+predicted_service, predicted_solution, predicted_instruction = predict_all(problem)
+print(f"Service: {predicted_service}")
+print(f"Solution: {predicted_solution}")
+print(f"Instruction: {predicted_instruction}")
