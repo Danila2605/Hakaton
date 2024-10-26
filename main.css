@@ -13,8 +13,26 @@ body {
 
 #label {
     background-color: #f5ca3d;
-    padding: 15px;
     border-bottom: 1px solid #f7f7f7;
+}
+
+#label_justify_container {
+    width: calc(75% - 96px);
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+}
+
+#label_logo {
+    height: 54px;
+    width: 54px;
+    background-image: url("images/logo.png");
+    background-size: cover;
+}
+
+#label_text {
+    padding: 15px 0px 10px 0px;
+    padding-right: calc((100% - 434px) / 2);
     font-size: 20px;
     font-weight: 600;
     text-align: center;
@@ -40,6 +58,8 @@ body {
     flex-direction: column;
     font-size: 18px;
     color: #171918;
+    scrollbar-width: 10px;
+    scrollbar-color: #b5b5b4 #E5AF43;
 }
 
 .message {
@@ -53,9 +73,9 @@ body {
 }
 
 .message.user {
-    background-color: #f5ca3db0;
+    background-color: #f5ca3df7;
     align-self: flex-end;
-    text-align: right;
+    text-align: left;
 }
 
 #input-container {
@@ -68,7 +88,7 @@ body {
     height: 42px;
     width: calc(100% - 72px);
     margin: 0 25px;
-    padding: 10px;
+    padding: 10px 60px 10px 18px;
     background-color: #f7f7f7;
     border: 1px solid #ccc;
     border-radius: 15px;
@@ -118,10 +138,10 @@ body {
     padding: 10px;
     border: none;
     position: absolute;
-    right: 32px; /* Отступ от правого края */
+    right: 32px;
     top: 50%;
-    transform: translateY(-50%); /* Центрирование по вертикали */
-    cursor: pointer; /* Изменение курсора при наведении */
+    transform: translateY(-50%);
+    cursor: pointer;
 }
 
 .messages::-webkit-scrollbar {

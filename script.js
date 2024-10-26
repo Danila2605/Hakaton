@@ -19,5 +19,6 @@ function sendMessage() {
         messagesContainer.appendChild(newMessage);
         input.value = '';
         messagesContainer.scrollTop = messagesContainer.scrollHeight; // Прокрутка вниз
+
     }
 }
